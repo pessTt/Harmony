@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Friends Call</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="login-screen" class="screen">
+    <div class="login-box">
+      <h1>🖥️ Friends Call</h1>
+      <p class="subtitle">Screen sharing room</p>
+
+      <div class="avatar-picker">
+        <div id="avatar-preview" class="avatar-preview">?</div>
+        <button id="choose-avatar-btn" type="button" class="link-btn">Choose profile picture</button>
+        <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
+      </div>
+
+      <input id="username-input" type="text" placeholder="Your name" maxlength="20" />
+      <input id="room-input" type="text" placeholder="Room name (e.g. study-group)" maxlength="30" />
+
+      <button id="join-btn">Join room</button>
+      <p id="login-error" class="error"></p>
+      <button id="toggle-advanced-btn" type="button" class="link-btn">Advanced settings</button>
+      <div id="advanced-settings" class="hidden">
+        <label class="small-label">Server address</label>
+        <input id="server-input" type="text" placeholder="https://..." />
+      </div>
+    </div>
+  </div>
+
+  <div id="app-screen" class="screen hidden">
+    <div class="sidebar">
+      <div class="room-info">
+        <h2 id="room-name-label">#room</h2>
+      </div>
+      <div class="members-list">
+        <h3>In room</h3>
+        <ul id="members-ul"></ul>
+      </div>
+      <div class="controls">
+        <button id="toggle-screen-btn" class="control-btn wide" title="Share screen">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 20h8M12 16v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Share screen</span>
+        </button>
+        <button id="leave-btn" class="control-btn leave" title="Leave">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="m5 16 3.5-1.2a1.5 1.5 0 0 1 1.7.6l1 1.6a11.4 11.4 0 0 0 4.7-4.7l-1.6-1a1.5 1.5 0 0 1-.6-1.7L15 6l-1-3a15.7 15.7 0 0 0-9 9l1 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" transform="rotate(135 12 12)"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="main-area">
+      <div id="videos-grid" class="videos-grid"></div>
+
+      <div class="chat-panel">
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-form">
+          <input id="chat-input" type="text" placeholder="Send a message..." autocomplete="off" />
+          <button type="submit">
+            <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 12 20 4l-6 16-3-7-7-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-picker-modal" class="modal hidden">
+    <div class="modal-box">
+      <h3>Select what to share</h3>
+      <p class="modal-hint">💡 To stream game/video audio along with it, select an entire <strong>Screen</strong> (not a specific window) — this is a Windows/Mac limitation, not the app's.</p>
+      <div id="screen-sources-grid" class="screen-sources-grid"></div>
+      <button id="cancel-screen-share">Cancel</button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="node_modules/socket.io-client/dist/socket.io.min.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
