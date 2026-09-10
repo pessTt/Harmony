@@ -1,0 +1,14 @@
+# Dependências instaladas (cada um gera as suas com "npm install")
+node_modules/
+
+# Instaladores gerados (arquivos grandes, não devem ir pro Git)
+client/dist/
+
+# Arquivo com a URL REAL do servidor — NUNCA deve ser público.
+# Copie client/config.example.js para client/config.js e preencha
+# com sua URL de verdade (esse arquivo fica só na sua máquina).
+client/config.js
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
