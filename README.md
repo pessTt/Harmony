@@ -49,3 +49,5 @@ No recording and no multiple channels or rooms per server instance. Each room na
 Render's free tier sleeps after about 15 minutes of inactivity. The first person to join after a gap may wait 20 to 50 seconds for the server to wake up. That's fine for a casual friend group; if you want zero wake up delay, upgrade to Render's paid tier (about $7/month) or self host on a free forever VPS like Oracle Cloud's Always Free tier.
 
 System audio capture through desktop capture (not getDisplayMedia) is a Chromium/Electron feature that's most reliable on Windows when sharing the full screen. Behavior on macOS may require extra OS level permissions or isn't supported without a virtual audio driver.
+
+⚠️A note on intent: this project was built purely as a learning exercise in WebRTC, Electron, and real-time signaling, for personal use with a small group of friends. It isn't designed or intended to bypass any platform's terms of service, licensing restrictions, DRM, or content protections, nor to enable unauthorized access to anything. Use it responsibly and in accordance with the terms of any service, game, or content you might share your screen from.⚠️
