@@ -1,10 +1,3 @@
-// Servidor de sinalizacao para o app de chamadas com amigos.
-// Este servidor NAO transporta audio/video/tela - ele so ajuda os
-// computadores dos amigos a se encontrarem e trocarem informacoes
-// tecnicas (WebRTC signaling). O audio/video/tela viaja direto
-// entre os PCs (peer-to-peer), entao o servidor pode ser bem simples
-// e gratuito.
-
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
@@ -13,9 +6,8 @@ const { Server } = require('socket.io');
 const app = express();
 app.use(cors());
 app.get('/', (req, res) => {
-  res.send('Servidor do app de chamadas está no ar! ✅');
+  res.send('Screen sharing app server is running! ✅');
 });
-// Rota simples de saude, util para "keep-alive" em hospedagens free
 app.get('/health', (req, res) => res.json({ ok: true, rooms: rooms.size }));
 
 const server = http.createServer(app);
@@ -25,7 +17,6 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 3000;
 
-// Estrutura em memoria: sala -> Map(socketId -> { username })
 const rooms = new Map();
 
 function getRoomUsers(roomId) {
@@ -35,17 +26,16 @@ function getRoomUsers(roomId) {
     id,
     username: data.username,
     avatar: data.avatar || null,
-    color: data.color || null,
   }));
 }
 
 io.on('connection', (socket) => {
-  console.log(`🔌 Conectado: ${socket.id}`);
+  console.log(`🔌 Connected: ${socket.id}`);
 
   let currentRoom = null;
   let currentUsername = null;
 
-  socket.on('join-room', ({ roomId, username, avatar, color }) => {
+  socket.on('join-room', ({ roomId, username, avatar }) => {
     currentRoom = roomId;
     currentUsername = username;
 
@@ -54,29 +44,22 @@ io.on('connection', (socket) => {
     }
     const room = rooms.get(roomId);
 
-    // Avisa aos que ja estao na sala que alguem novo chegou
-    socket.to(roomId).emit('user-joined', { id: socket.id, username, avatar, color });
+    socket.to(roomId).emit('user-joined', { id: socket.id, username, avatar });
 
-    room.set(socket.id, { username, avatar, color });
+    room.set(socket.id, { username, avatar });
     socket.join(roomId);
 
-    // Manda para o novo usuario a lista de quem ja esta na sala
     socket.emit('room-users', getRoomUsers(roomId).filter((u) => u.id !== socket.id));
 
-    console.log(`👤 ${username} entrou na sala ${roomId}`);
+    console.log(`👤 ${username} joined room ${roomId}`);
   });
 
-  // Alguem trocou a foto de perfil ou a cor da borda em tempo real
-  socket.on('profile-updated', ({ roomId, avatar, color }) => {
+  socket.on('profile-updated', ({ roomId, avatar }) => {
     if (currentRoom && rooms.has(currentRoom)) {
-      const room = rooms.get(currentRoom);
-      const data = room.get(socket.id);
-      if (data) {
-        if (avatar !== undefined) data.avatar = avatar;
-        if (color !== undefined) data.color = color;
-      }
+      const data = rooms.get(currentRoom).get(socket.id);
+      if (data) data.avatar = avatar;
     }
-    socket.to(roomId).emit('profile-updated', { id: socket.id, avatar, color });
+    socket.to(roomId).emit('profile-updated', { id: socket.id, avatar });
   });
 
   socket.on('chat-message', ({ roomId, message, username }) => {
@@ -88,7 +71,6 @@ io.on('connection', (socket) => {
     });
   });
 
-  // --- Sinalizacao WebRTC (repassa mensagens entre pares) ---
   socket.on('webrtc-offer', ({ to, offer }) => {
     io.to(to).emit('webrtc-offer', { from: socket.id, offer });
   });
@@ -101,7 +83,6 @@ io.on('connection', (socket) => {
     io.to(to).emit('webrtc-ice-candidate', { from: socket.id, candidate });
   });
 
-  // Avisa a sala quando alguem liga/desliga camera, microfone ou tela
   socket.on('media-state-changed', ({ roomId, kind, enabled }) => {
     socket.to(roomId).emit('media-state-changed', { id: socket.id, kind, enabled });
   });
@@ -114,10 +95,10 @@ io.on('connection', (socket) => {
       }
       socket.to(currentRoom).emit('user-left', { id: socket.id, username: currentUsername });
     }
-    console.log(`❌ Desconectado: ${socket.id}`);
+    console.log(`❌ Disconnected: ${socket.id}`);
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
