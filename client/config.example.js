@@ -1,5 +1,5 @@
 
-window.SERVER_URL = 'https://YOUR-SERVER-HERE.onrender.com';
+window.SERVER_URL = 'https://YOUR-SERVER-HERE-IN-THE-SITE.onrender.com';
 
 
 window.ICE_SERVERS = [
